@@ -2,8 +2,11 @@ import dicom
 import os
 import numpy as np
 from matplotlib import pyplot, cm
-
-
+import skimage
+from skimage import data , io , color, exposure , filters , measure
+from skimage.feature import hog
+from scipy import ndimage
+from scipy.ndimage import label, generate_binary_structure
 #Setting the path of imagesets.
 dataSet=12
 path='../../DataSets/LIDC image set/Renamed/LIDC'+str(dataSet)+'/'
@@ -61,12 +64,42 @@ for filenameDCM in fileListMasked:
     # store the raw image data
     ArrayDicomMasked[:, :, fileListMasked.index(filenameDCM)] = ds.pixel_array
 # use print(ArrayDicom.shape) to get the dimentions of the 3d np array.
-#print(ArrayDicomMasked[5:100,5:100,20])
-ArrayDicom = np.multiply(ArrayDicomMasked , ArrayDicom) #find fix.
-print(ArrayDicomMasked[70:100,150:200])
-
+ArrayDicom = np.multiply(ArrayDicomMasked , ArrayDicom)
+'''# USE this to test if it is ready for Labelling.
 pyplot.figure(dpi=300)
 pyplot.axes().set_aspect('equal', 'datalim')
 pyplot.set_cmap(pyplot.gray())
 pyplot.pcolormesh(x, y, np.flipud(ArrayDicomMasked[:, :, 80]))
+pyplot.show()'''
+
+'''#use this to get individual slices
+im=ArrayDicomMasked
+im, number_of_objects = ndimage.label(im)
+blobs = ndimage.find_objects(im)
+all_labels ,  = measure.label(ArrayDicomMasked)'''
+
+
+#Labelling.
+# using structure=generate_binary_structure(3,3) to consider diagonal elements as linked.
+blobs_labels , number_of_objects = label(ArrayDicomMasked, structure=generate_binary_structure(3,3))
+#print(blobs)
+print(number_of_objects) # no of objects
+#print(blobs_labels.shape) To assert
+#Testing lables
+'''
+for xc in range(0,512):
+    for yc in range(0,512):
+        if blobs_labels[xc,yc, 81] !=0:
+            print(xc,yc,blobs_labels[xc, yc, 81])'''
+            
+#To display labelling in action.                    
+pyplot.figure(dpi=300)
+pyplot.axes().set_aspect('equal', 'datalim')
+pyplot.set_cmap(pyplot.gray())
+pyplot.pcolormesh(x, y, np.flipud(blobs_labels[:,:, 81]))
 pyplot.show()
+    
+    
+    
+    
+    
