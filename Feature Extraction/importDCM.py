@@ -1,12 +1,13 @@
 import dicom
 import os
 import numpy as np
-from matplotlib import pyplot, cm
+from matplotlib import pyplot
 import skimage
-from skimage import data , io , color, exposure , filters , measure
+from skimage import data , io , color, exposure , filters , measure,morphology
 from skimage.feature import hog
 from scipy import ndimage
 from scipy.ndimage import label, generate_binary_structure
+from skimage.segmentation import relabel_sequential
 #Setting the path of imagesets.
 dataSet=12
 path='../../DataSets/LIDC image set/Renamed/LIDC'+str(dataSet)+'/'
