@@ -9,7 +9,7 @@ from scipy import ndimage
 from scipy.ndimage import label, generate_binary_structure
 from skimage.segmentation import relabel_sequential
 #Setting the path of imagesets.
-dataSet=12
+dataSet=27
 path='../../DataSets/LIDC image set/Renamed/LIDC'+str(dataSet)+'/'
 fileListDicom=[]
 
@@ -82,7 +82,7 @@ all_labels ,  = measure.label(ArrayDicomMasked)'''
 
 #Labelling.
 # using structure=generate_binary_structure(3,3) to consider diagonal elements as linked.
-blobs_labels , number_of_objects = label(ArrayDicomMasked, structure=generate_binary_structure(3,3))
+blobs_labels , number_of_objects = label(ArrayDicom, structure=generate_binary_structure(3,3))
 #print(blobs)
 print(number_of_objects) # no of objects
 #print(blobs_labels.shape) To assert
@@ -101,6 +101,8 @@ pyplot.pcolormesh(x, y, np.flipud(blobs_labels[:,:, 81]))
 pyplot.show()
     
     
-    
+properties = measure.regionprops(blobs_labels)
+for prop in properties :
+    print(prop.area)
     
     
