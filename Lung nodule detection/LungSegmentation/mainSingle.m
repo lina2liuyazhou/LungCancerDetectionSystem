@@ -1,7 +1,7 @@
   
 rootdir = 'D:\Lung\DataSets\LIDC image set\Renamed\LIDC';
 workspacedir = 'D:\Lung\DataSets\LIDC image set\Workspaces\';
-set=12
+set=20
 currentdir = strcat(rootdir,int2str(set),'\');
 % currentdir = '..\Data Set - Others\renamedData110\'; %Non LIDC sets
 
@@ -16,7 +16,6 @@ for i=1:slices
 end
 
 invert = not(bw); %Invert to get Lungs - black, remaining white
-
 comps = bwconncomp(invert);
 pixelarea = cellfun(@numel,comps.PixelIdxList);
 [largest,pos] = max(pixelarea);
@@ -43,6 +42,7 @@ for i=1:comps.NumObjects
 end
 
 comps2 = bwconncomp(componentsMask);
+props2 = regionprops(comps2);
 
 %imshow3D(componentsMask)
 %figure

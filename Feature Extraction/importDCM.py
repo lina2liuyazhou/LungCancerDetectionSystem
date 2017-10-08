@@ -8,8 +8,9 @@ from skimage.feature import hog
 from scipy import ndimage
 from scipy.ndimage import label, generate_binary_structure
 from skimage.segmentation import relabel_sequential
+from PIL import Image
 #Setting the path of imagesets.
-dataSet=27
+dataSet=20
 path='../../DataSets/LIDC image set/Renamed/LIDC'+str(dataSet)+'/'
 fileListDicom=[]
 
@@ -91,18 +92,18 @@ print(number_of_objects) # no of objects
 for xc in range(0,512):
     for yc in range(0,512):
         if blobs_labels[xc,yc, 81] !=0:
-            print(xc,yc,blobs_labels[xc, yc, 81])'''
-            
+            print(xc,yc,blobs_labels[xc, yc, 81])
+      '''      
 #To display labelling in action.                    
 pyplot.figure(dpi=300)
 pyplot.axes().set_aspect('equal', 'datalim')
 pyplot.set_cmap(pyplot.gray())
-pyplot.pcolormesh(x, y, np.flipud(blobs_labels[:,:, 81]))
+pyplot.pcolormesh(x, y, np.flipud(blobs_labels[:,:, 80]))
 pyplot.show()
     
     
 properties = measure.regionprops(blobs_labels)
 for prop in properties :
     print(prop.area)
-    
-    
+
+print(ArrayDicom.shape)
