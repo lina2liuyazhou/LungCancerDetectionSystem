@@ -1,7 +1,7 @@
   
 rootdir = 'D:\Lung\DataSets\LIDC image set\Renamed\LIDC';
 workspacedir = 'D:\Lung\DataSets\LIDC image set\Workspaces\';
-set=20
+set=12
 currentdir = strcat(rootdir,int2str(set),'\');
 % currentdir = '..\Data Set - Others\renamedData110\'; %Non LIDC sets
 
@@ -43,6 +43,8 @@ end
 
 comps2 = bwconncomp(componentsMask);
 props2 = regionprops(comps2);
+
+
 
 %imshow3D(componentsMask)
 %figure

@@ -2,15 +2,10 @@ import dicom
 import os
 import numpy as np
 from matplotlib import pyplot
-import skimage
-from skimage import data , io , color, exposure , filters , measure,morphology
-from skimage.feature import hog
-from scipy import ndimage
+from skimage import  measure
 from scipy.ndimage import label, generate_binary_structure
-from skimage.segmentation import relabel_sequential
-from PIL import Image
 #Setting the path of imagesets.
-dataSet=20
+dataSet=12
 path='../../DataSets/LIDC image set/Renamed/LIDC'+str(dataSet)+'/'
 fileListDicom=[]
 
@@ -66,6 +61,7 @@ for filenameDCM in fileListMasked:
     # store the raw image data
     ArrayDicomMasked[:, :, fileListMasked.index(filenameDCM)] = ds.pixel_array
 # use print(ArrayDicom.shape) to get the dimentions of the 3d np array.
+temp=ArrayDicom
 ArrayDicom = np.multiply(ArrayDicomMasked , ArrayDicom)
 '''# USE this to test if it is ready for Labelling.
 pyplot.figure(dpi=300)
@@ -88,12 +84,12 @@ blobs_labels , number_of_objects = label(ArrayDicom, structure=generate_binary_s
 print(number_of_objects) # no of objects
 #print(blobs_labels.shape) To assert
 #Testing lables
-'''
+
 for xc in range(0,512):
     for yc in range(0,512):
         if blobs_labels[xc,yc, 81] !=0:
-            print(xc,yc,blobs_labels[xc, yc, 81])
-      '''      
+            print(xc,yc,temp[xc, yc, 81])
+            
 #To display labelling in action.                    
 pyplot.figure(dpi=300)
 pyplot.axes().set_aspect('equal', 'datalim')
@@ -104,6 +100,7 @@ pyplot.show()
     
 properties = measure.regionprops(blobs_labels)
 for prop in properties :
+    print(prop.centroid)
     print(prop.area)
 
 print(ArrayDicom.shape)
