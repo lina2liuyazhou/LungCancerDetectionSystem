@@ -4,6 +4,7 @@ import numpy as np
 from matplotlib import pyplot
 from skimage import  measure
 from scipy.ndimage import label, generate_binary_structure
+from FeatureExtractionMain import FeatureExtractionMainFunction
 #Setting the path of imagesets.
 dataSet=12
 path='../../DataSets/LIDC image set/Renamed/LIDC'+str(dataSet)+'/'
@@ -107,10 +108,7 @@ pyplot.axes().set_aspect('equal', 'datalim')
 pyplot.set_cmap(pyplot.gray())
 pyplot.pcolormesh(x, y, np.flipud(blobs_labels[:,:, 80]))
 pyplot.show()
-    
-area=0    
-properties = measure.regionprops(blobs_labels)
-for prop in properties :
-    #print(prop.area)
-    print(prop.intensity_image)
-print(ArrayDicom.shape)
+#print(ArrayDicom.shape[1]) 
+#properties = measure.regionprops(blobs_labels)
+RawDictionary = FeatureExtractionMainFunction(blobs_labels,number_of_objects,temp)
+print(RawDictionary["Coordinate1"])
