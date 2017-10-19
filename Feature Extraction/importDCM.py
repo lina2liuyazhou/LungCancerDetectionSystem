@@ -74,9 +74,20 @@ pyplot.show()'''
 im=ArrayDicomMasked
 im, number_of_objects = ndimage.label(im)
 blobs = ndimage.find_objects(im)
-all_labels ,  = measure.label(ArrayDicomMasked)'''
-
-
+all_labels ,  = measure.label(ArrayDicomMasked)
+count1=0
+count2=0
+for xc in range(0,512):
+    for yc in range(0,512):
+        for zc in range(0,len(fileListDicom)):
+            if(ArrayDicom[xc,yc,zc]!=0):
+                count1 = count1+1
+for xc in range(0,512):
+    for yc in range(0,512):
+        for zc in range(0,len(fileListDicom)):
+            if(ArrayDicomMasked[xc,yc,zc]!=0):
+                count2 = count2+1
+print(count1,count2)'''
 #Labelling.
 # using structure=generate_binary_structure(3,3) to consider diagonal elements as linked.
 blobs_labels , number_of_objects = label(ArrayDicom, structure=generate_binary_structure(3,3))
@@ -97,10 +108,9 @@ pyplot.set_cmap(pyplot.gray())
 pyplot.pcolormesh(x, y, np.flipud(blobs_labels[:,:, 80]))
 pyplot.show()
     
-    
+area=0    
 properties = measure.regionprops(blobs_labels)
 for prop in properties :
-    print(prop.centroid)
-    print(prop.area)
-
+    #print(prop.area)
+    print(prop.intensity_image)
 print(ArrayDicom.shape)
