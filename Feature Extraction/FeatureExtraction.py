@@ -35,7 +35,7 @@ def MeanIntensity(RawDictionary):
     '''
     input: RawDictionary --> A dictionary storing required values for calculating area of a particular dataset.
     
-    output: area[]  --> A list of mean intensity values of all the objects of a particular dataset.
+    output: Mean[]  --> A list of mean intensity values of all the objects of a particular dataset.
     
     mean= sum(all intensities) / (no of pixels)
     '''
@@ -49,7 +49,7 @@ def MaxMinIntensityDifference(RawDictionary):
     '''
     input: RawDictionary --> A dictionary storing required values for calculating area of a particular dataset.
     
-    output: area[]  --> A list of difference between maximum and minimum intensity values of
+    output: MaxMinDiff[]  --> A list of difference between maximum and minimum intensity values of
                         all the objects of a particular dataset.
     
     MaxMinDiff = maximum intensity - minimum intensity
@@ -61,8 +61,22 @@ def MaxMinIntensityDifference(RawDictionary):
         MaxMinDiff.append(max(intensityI) - min(intensityI))
     return MaxMinDiff
 
-
+def Varience(RawDictionary):
+    '''
+    input: RawDictionary --> A dictionary storing required values for calculating area of a particular dataset.
     
+    output: Var[]  --> A list of Varience values of all the objects of a particular dataset.
+    
+    '''
+    n=RawDictionary["NoOfObjects"]
+    Var = []
+    for i in range(1,n+1):
+        intensityI=RawDictionary["Intensity"+str(i)]
+        Var.append(np.var(intensityI))
+    return Var
+
+
+
     
     
     
