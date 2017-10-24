@@ -1,4 +1,4 @@
-def FeatureExtractionMainFunction(blobs_labels,number_of_objects,ArrayDicom):
+def FeatureExtractionMainFunction(blobs_labels,number_of_objects,ArrayDicom,details,properties):
     #y = [[[] for i in range(n)] for i in range(n)]
     IntensityListExternal = []   #Setting intensity lists
     CoordinateExternal = []      #Setting Cordinates list
@@ -40,6 +40,10 @@ def FeatureExtractionMainFunction(blobs_labels,number_of_objects,ArrayDicom):
     '''
     RawDictionary = {}
     RawDictionary["NoOfObjects"]=number_of_objects
+    RawDictionary["SliceThickness"] = details[0]
+    RawDictionary["PixelSpacingX"] = details[1]
+    RawDictionary["PixelSpacingY"] = details[2]
+    RawDictionary["Properties"] = properties
     for i in range(0,number_of_objects):
         RawDictionary["Intensity"+str(i+1)] = IntensityListExternal[i]
         RawDictionary["Coordinate"+str(i+1)] = CoordinateExternal[i]

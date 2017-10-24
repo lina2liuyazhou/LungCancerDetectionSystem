@@ -1,8 +1,10 @@
 from importDCM import importDCM
 import FeatureExtractionMain as Fmain
 import numpy as np
-blobs_labels,number_of_objects,ArrayDicom = importDCM(60)
-RawDictionary=Fmain.FeatureExtractionMainFunction(blobs_labels,number_of_objects,ArrayDicom)
+import math
+from numpy import mgrid, sum
+blobs_labels,number_of_objects,ArrayDicom , details , properties = importDCM(20)
+RawDictionary=Fmain.FeatureExtractionMainFunction(blobs_labels,number_of_objects,ArrayDicom , details , properties)
 
 
 def Area(RawDictionary):
@@ -12,14 +14,20 @@ def Area(RawDictionary):
     output: area[]  --> A list of areas of all the objects of a particular dataset.
     '''
     n=RawDictionary["NoOfObjects"]
+    PixelSpacingX = RawDictionary["PixelSpacingX"]
+    PixelSpacingY = RawDictionary["PixelSpacingY"]
+    SliceThickness = RawDictionary["SliceThickness"]
     area = []
     for i in range(1,n+1):
-        area.append(len(RawDictionary["Intensity"+str(i)]))
+        area.append(len(RawDictionary["Intensity"+str(i)]) * PixelSpacingX * PixelSpacingY * SliceThickness)
     return area
 
-'''
-def perimeter(RawDictionary,ArrayDicom):
+
+def perimeter(RawDictionary,blobs_labels):
     n=RawDictionary["NoOfObjects"]
+    PixelSpacingX = RawDictionary["PixelSpacingX"]
+    PixelSpacingY = RawDictionary["PixelSpacingY"]
+    per = []
     for i in range(1,n+1):
         count = 0
         coordinates = RawDictionary["Coordinate"+str(i)]
@@ -27,10 +35,14 @@ def perimeter(RawDictionary,ArrayDicom):
             x=pixel[0]
             y=pixel[1]
             z=pixel[2]
-            if ArrayDicom[x][y][z]!=1 && ArrayDicom[x][y][z]!=1 && ArrayDicom[x][y][z]!=1 && ArrayDicom[x][y][z]!=1:
-                print(x,y,z)
+            if blobs_labels[x+1][y][z]!=i or blobs_labels[x-1][y][z]!=i :
+                count = count + PixelSpacingX
+            if blobs_labels[x][y+1][z]!=i or blobs_labels[x][y-1][z]!=i :
+                count = count + PixelSpacingY
+        per.append(count)
+    return per
 
-'''
+
 def MeanIntensity(RawDictionary):
     '''
     input: RawDictionary --> A dictionary storing required values for calculating area of a particular dataset.
@@ -43,7 +55,8 @@ def MeanIntensity(RawDictionary):
     Mean = []
     for i in range(1,n+1):
         intensityI=RawDictionary["Intensity"+str(i)]
-        Mean.append(np.mean(intensityI))
+        Mean.append(np.mean(intensityI)) 
+        
     return Mean
 def MaxMinIntensityDifference(RawDictionary):
     '''
@@ -75,20 +88,50 @@ def Varience(RawDictionary):
         Var.append(np.var(intensityI))
     return Var
 
+'''
+def Moments(image):
+     assert len(image.shape) == 2 # only for grayscale images        
+     x, y = mgrid[:image.shape[0],:image.shape[1]]
+     moments = {}
+     moments['mean_x'] = sum(x*image)/sum(image)
+     moments['mean_y'] = sum(y*image)/sum(image)
+     # central moments
+     # moments['mu01']= sum((y-moments['mean_y'])*image) # should be 0
+     # moments['mu10']= sum((x-moments['mean_x'])*image) # should be 0
+     moments['mu11'] = sum((x-moments['mean_x'])*(y-moments['mean_y'])*image)
+     moments['mu02'] = sum((y-moments['mean_y'])**2*image) # variance
+     moments['mu20'] = sum((x-moments['mean_x'])**2*image) # variance
+     moments['mu12'] = sum((x-moments['mean_x'])*(y-moments['mean_y'])**2*image)
+     moments['mu21'] = sum((x-moments['mean_x'])**2*(y-moments['mean_y'])*image) 
+     moments['mu03'] = sum((y-moments['mean_y'])**3*image) 
+     moments['mu30'] = sum((x-moments['mean_x'])**3*image) 
+    '''
 
 
+def MomentOfInertia(RawDictionary):
+    n=RawDictionary["NoOfObjects"]
+    MOI = []
+    centroid = np.array(Centroid(RawDictionary)) #It is correct
+    for i in range(1,n+1):
+        intensityI=RawDictionary["Intensity"+str(i)]
+        coordinatesI = np.array(RawDictionary["Coordinate"+str(i)])
+        distance = np.absolute(coordinatesI - centroid[i])
+        print(distance)
+        
+        
     
     
     
+def Centroid(RawDictionary):
+    Properties = RawDictionary["Properties"]
+    centroid = []
+    EulerNo = []
+    for prop in Properties:
+        centroid.append(prop.centroid)
+        #EulerNo.append(prop.perimeter  )
+    return centroid
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+MomentOfInertia(RawDictionary)
     
     

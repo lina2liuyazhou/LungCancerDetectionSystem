@@ -110,4 +110,10 @@ def importDCM(DataSet=12):
     #print(len(peri))
     #RawDictionary = FeatureExtractionMainFunction(blobs_labels,number_of_objects,temp)
     #print(RawDictionary)
-    return blobs_labels,number_of_objects,temp
+    details = [RefDs.SliceThickness , RefDs.PixelSpacing[0] ,RefDs.PixelSpacing[1]]
+    centroid = []
+    properties = measure.regionprops(blobs_labels, intensity_image=temp, cache=True)
+   # for props in properties :
+     #   centroid.append(props.mean_intensity)
+   # details1 = props.moments_hu
+    return blobs_labels,number_of_objects,temp,details , properties
