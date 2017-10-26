@@ -3,6 +3,7 @@ import FeatureExtractionMain as Fmain
 import numpy as np
 import math
 from numpy import mgrid, sum
+from scipy.stats import kurtosis, skew
 blobs_labels,number_of_objects,ArrayDicom , details , properties = importDCM(20)
 RawDictionary=Fmain.FeatureExtractionMainFunction(blobs_labels,number_of_objects,ArrayDicom , details , properties)
 
@@ -107,7 +108,7 @@ def Moments(image):
      moments['mu30'] = sum((x-moments['mean_x'])**3*image) 
     '''
 
-
+'''
 def MomentOfInertia(RawDictionary):
     n=RawDictionary["NoOfObjects"]
     MOI = []
@@ -132,6 +133,21 @@ def Centroid(RawDictionary):
     return centroid
     
 
-MomentOfInertia(RawDictionary)
-    
-    
+MomentOfInertia(RawDictionary)'''
+
+def Skewness(RawDictionary):
+    Skew = []
+    n = RawDictionary["NoOfObjects"]
+    for i in range(1,n+1): 
+        intensityI=np.array(RawDictionary["Intensity"+str(i)])
+        Skew.append(skew(intensityI))
+    return Skew
+
+def Kurtosis(RawDictionary):
+    values = []
+    n = RawDictionary["NoOfObjects"]
+    for i in range(1,n+1): 
+        intensityI=np.array(RawDictionary["Intensity"+str(i)])
+        values.append(kurtosis(intensityI))
+    return values
+print(Kurtosis(RawDictionary))
