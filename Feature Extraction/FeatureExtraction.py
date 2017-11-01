@@ -4,6 +4,8 @@ import numpy as np
 import math
 from numpy import mgrid, sum
 from scipy.stats import kurtosis, skew
+import timeit
+start = timeit.default_timer()
 blobs_labels,number_of_objects,ArrayDicom , details , properties = importDCM(20)
 RawDictionary=Fmain.FeatureExtractionMainFunction(blobs_labels,number_of_objects,ArrayDicom , details , properties)
 
@@ -27,6 +29,7 @@ def Area(RawDictionary):
 def perimeter(RawDictionary,blobs_labels):
     n=RawDictionary["NoOfObjects"]
     PixelSpacingX = RawDictionary["PixelSpacingX"]
+    SliceThickness = RawDictionary["SliceThickness"]
     PixelSpacingY = RawDictionary["PixelSpacingY"]
     per = []
     for i in range(1,n+1):
@@ -40,7 +43,7 @@ def perimeter(RawDictionary,blobs_labels):
                 count = count + PixelSpacingX
             if blobs_labels[x][y+1][z]!=i or blobs_labels[x][y-1][z]!=i :
                 count = count + PixelSpacingY
-        per.append(count)
+        per.append(count*SliceThickness)
     return per
 
 
@@ -105,10 +108,10 @@ def Moments(image):
      moments['mu12'] = sum((x-moments['mean_x'])*(y-moments['mean_y'])**2*image)
      moments['mu21'] = sum((x-moments['mean_x'])**2*(y-moments['mean_y'])*image) 
      moments['mu03'] = sum((y-moments['mean_y'])**3*image) 
-     moments['mu30'] = sum((x-moments['mean_x'])**3*image) 
-    '''
+     moments['mu30'] = sum((x-moments['mean_x'])**3*image) '''
 
 '''
+
 def MomentOfInertia(RawDictionary):
     n=RawDictionary["NoOfObjects"]
     MOI = []
@@ -117,23 +120,20 @@ def MomentOfInertia(RawDictionary):
         intensityI=RawDictionary["Intensity"+str(i)]
         coordinatesI = np.array(RawDictionary["Coordinate"+str(i)])
         distance = np.absolute(coordinatesI - centroid[i])
-        print(distance)
+        print(distance) 
+'''        
         
-        
-    
     
     
 def Centroid(RawDictionary):
     Properties = RawDictionary["Properties"]
     centroid = []
-    EulerNo = []
     for prop in Properties:
         centroid.append(prop.centroid)
-        #EulerNo.append(prop.perimeter  )
     return centroid
     
 
-MomentOfInertia(RawDictionary)'''
+
 
 def Skewness(RawDictionary):
     Skew = []
@@ -150,4 +150,52 @@ def Kurtosis(RawDictionary):
         intensityI=np.array(RawDictionary["Intensity"+str(i)])
         values.append(kurtosis(intensityI))
     return values
-print(Kurtosis(RawDictionary))
+def sphericity(RawDictionary):
+    vol=Area(RawDictionary)
+    Sa = perimeter(RawDictionary,blobs_labels)
+    spher=[]
+    n=RawDictionary["NoOfObjects"]
+    for i in range(1,n+1):
+        spher.append(math.pow(math.pi,(1/3.0))*(math.pow(6*vol[i-1],2/3.0))/Sa[i-1])
+    return spher
+
+def mu(p,q,r,RawDictionary,centroid):
+    muu = []
+    n = RawDictionary["NoOfObjects"]
+    for j in range(1,n+1):
+        coordinateI = RawDictionary["Coordinate"+str(j)]
+        muval = 0
+        for i in range(1,len(coordinateI)):
+            muval = muval + (math.pow((coordinateI[i-1][0] - centroid[j-1][0]),p) * math.pow((coordinateI[i-1][1] - centroid[j-1][1]),q) * math.pow((coordinateI[i-1][2] - centroid[j-1][2]),r))
+        muu.append(muval)
+    return muu
+    
+
+def moment(RawDictionary):
+    centroid = Centroid(RawDictionary)
+    mu200 = np.array(mu(2,0,0,RawDictionary,centroid))
+    mu020 = np.array(mu(0,2,0,RawDictionary,centroid))  
+    mu002 = np.array(mu(0,0,2,RawDictionary,centroid))
+    mu110 = np.array(mu(1,1,0,RawDictionary,centroid))
+    mu101 = np.array(mu(1,0,1,RawDictionary,centroid))
+    mu011 = np.array(mu(0,1,1,RawDictionary,centroid))
+    J1 = np.add(mu200, np.add(mu020, mu002))
+    J2a = np.add(np.multiply(mu200,mu020),np.add(np.multiply(mu200,mu002),np.multiply(mu020,mu002)))
+    J2b = np.add(np.multiply(mu110,mu110),np.add(np.multiply(mu101,mu101),np.multiply(mu011,mu011)))
+    J2 = np.subtract(J2a,J2b)
+    J3a = np.add(np.multiply(mu200,np.multiply(mu020,mu002)),2*np.multiply(mu110,np.multiply(mu101,mu011)))
+    J3b = np.add(np.multiply(mu002,np.multiply(mu110,mu110)),np.add(np.multiply(mu020,np.multiply(mu101,mu101)),np.multiply(mu200,np.multiply(mu011,mu011))))
+    J3 = np.subtract(J3a,J3b)
+    return np.log10(J1), np.log10(J2), np.log10(J3)
+
+print("Area is ",sphericity(RawDictionary))
+'''
+n = RawDictionary["NoOfObjects"]
+for i in range(1,n+1):
+     coordinateI = RawDictionary["Coordinate"+str(i)]
+     #for j in range(1,len(coordinateI)):
+     print(coordinateI)'''
+
+end = timeit.default_timer()
+
+print("TIME = ",(end-start))

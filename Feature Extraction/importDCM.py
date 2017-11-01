@@ -10,12 +10,16 @@ def importDCM(DataSet=12):
     dataSet=DataSet
     path='../../DataSets/LIDC image set/Renamed/LIDC'+str(dataSet)+'/'
     fileListDicom=[]
-    
     #Get all the .dcm files from a given image set directory.
-    for dirName, subdirList, fileList in os.walk(path):
+    '''
+   for dirName, subdirList, fileList in os.walk(path):
         for filename in fileList:
             if ".dcm" in filename.lower():  # check whether the file's DICOM
                 fileListDicom.append(os.path.join(dirName,filename))
+                fileorder.append(filename)'''
+    length=len(os.listdir(path))
+    for i in range(1,length+1):
+        fileListDicom.append(path+str(i)+".dcm")
     #Read first .dcm image of a given dataSet(metadata)
     RefDs = dicom.read_file(fileListDicom[0])
     
@@ -34,7 +38,7 @@ def importDCM(DataSet=12):
     
     # The array is sized based on 'ConstPixelDims'
     ArrayDicom = np.zeros(ConstPixelDims, dtype=RefDs.pixel_array.dtype)
-    
+   
     # loop through all the DICOM files
     for filenameDCM in fileListDicom:
         # read the file
@@ -46,11 +50,16 @@ def importDCM(DataSet=12):
     path='../../DataSets/compmask/'+str(dataSet)+'/'
     fileListMasked=[]
    
-   #Get all the .dcm files from a given image set directory.
+    ''' 
+  #Get all the .dcm files from a given image set directory.
     for dirName, subdirList, fileList in os.walk(path):
        for filename in fileList:
            if ".dcm" in filename.lower():  # check whether the file's DICOM
-                fileListMasked.append(os.path.join(dirName,filename))
+                fileListMasked.append(os.path.join(dirName,filename))'''
+    length=len(os.listdir(path))
+    for i in range(1,length+1):
+        fileListMasked.append(path+str(i)+".dcm")            
+                
     ArrayDicomMasked = np.zeros(ConstPixelDims, dtype=RefDs.pixel_array.dtype)
    
    # loop through all the DICOM files
@@ -104,7 +113,7 @@ def importDCM(DataSet=12):
     pyplot.figure(dpi=300)
     pyplot.axes().set_aspect('equal', 'datalim')
     pyplot.set_cmap(pyplot.gray())
-    pyplot.pcolormesh(x, y, np.flipud(blobs_labels[:,:, 80]))
+    pyplot.pcolormesh(x, y, np.flipud(blobs_labels[:,:, 33]))
     pyplot.show()
    #print(ArrayDicom.shape[1]) 
     #print(len(peri))
