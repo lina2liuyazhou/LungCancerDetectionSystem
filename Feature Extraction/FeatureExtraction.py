@@ -5,8 +5,10 @@ import math
 from numpy import mgrid, sum
 from scipy.stats import kurtosis, skew
 import timeit
+from radiomics import featureextractor
 start = timeit.default_timer()
-blobs_labels,number_of_objects,ArrayDicom , details , properties = importDCM(20)
+print(start)
+blobs_labels,number_of_objects,ArrayDicom , details , properties = importDCM(12)
 RawDictionary=Fmain.FeatureExtractionMainFunction(blobs_labels,number_of_objects,ArrayDicom , details , properties)
 
 
@@ -22,7 +24,7 @@ def Area(RawDictionary):
     SliceThickness = RawDictionary["SliceThickness"]
     area = []
     for i in range(1,n+1):
-        area.append(len(RawDictionary["Intensity"+str(i)]) * PixelSpacingX * PixelSpacingY * SliceThickness)
+        area.append(len(RawDictionary["Intensity"+str(i)]) * PixelSpacingX * PixelSpacingY * (SliceThickness/2.0))
     return area
 
 
@@ -110,18 +112,27 @@ def Moments(image):
      moments['mu03'] = sum((y-moments['mean_y'])**3*image) 
      moments['mu30'] = sum((x-moments['mean_x'])**3*image) '''
 
-'''
+
 
 def MomentOfInertia(RawDictionary):
     n=RawDictionary["NoOfObjects"]
     MOI = []
+    PixelSpacingX = RawDictionary["PixelSpacingX"]
+    SliceThickness = RawDictionary["SliceThickness"]
+    PixelSpacingY = RawDictionary["PixelSpacingY"]
+    Pixy = np.array([PixelSpacingX,PixelSpacingY,SliceThickness])
     centroid = np.array(Centroid(RawDictionary)) #It is correct
     for i in range(1,n+1):
-        intensityI=RawDictionary["Intensity"+str(i)]
+        intensityI=np.array(RawDictionary["Intensity"+str(i)])
         coordinatesI = np.array(RawDictionary["Coordinate"+str(i)])
-        distance = np.absolute(coordinatesI - centroid[i])
-        print(distance) 
-'''        
+        sum = 0
+        for j in range(1,coordinatesI.shape[0]):
+            distance = np.sum(np.square(np.multiply(np.absolute(coordinatesI[j-1] - centroid[i-1]),Pixy)))
+            print(distance) 
+            sum = sum + distance * intensityI[j - 1]
+        MOI.append(sum)
+    return np.array(MOI)
+        
         
     
     
@@ -157,6 +168,8 @@ def sphericity(RawDictionary):
     n=RawDictionary["NoOfObjects"]
     for i in range(1,n+1):
         spher.append(math.pow(math.pi,(1/3.0))*(math.pow(6*vol[i-1],2/3.0))/Sa[i-1])
+        if(spher[i-1]>1):
+            print(vol[i-1],Sa[i-1],i)
     return spher
 
 def mu(p,q,r,RawDictionary,centroid):
@@ -188,14 +201,44 @@ def moment(RawDictionary):
     J3 = np.subtract(J3a,J3b)
     return np.log10(J1), np.log10(J2), np.log10(J3)
 
-print("Area is ",sphericity(RawDictionary))
+#print("Moment is ",moment(RawDictionary))
 '''
 n = RawDictionary["NoOfObjects"]
 for i in range(1,n+1):
      coordinateI = RawDictionary["Coordinate"+str(i)]
      #for j in range(1,len(coordinateI)):
-     print(coordinateI)'''
+     print(coordinateI) '''
 
+def perimeter2(RawDictionary,blobs_labels):
+    n=RawDictionary["NoOfObjects"]
+    PixelSpacingX = RawDictionary["PixelSpacingX"]
+    SliceThickness = RawDictionary["SliceThickness"]
+    PixelSpacingY = RawDictionary["PixelSpacingY"]
+    per = []
+    for i in range(1,n+1):
+        countXY = 0
+        countYZ = 0
+        countZX = 0
+        SurfaceAreaI = 0
+        coordinates = RawDictionary["Coordinate"+str(i)]
+        for pixel in coordinates:
+            x=pixel[0]
+            y=pixel[1]
+            z=pixel[2]
+            #if x==o or x== n:
+        
+            if blobs_labels[x+1][y][z]!=i or blobs_labels[x-1][y][z]!=i :
+                count = count + PixelSpacingX
+            if blobs_labels[x][y+1][z]!=i or blobs_labels[x][y-1][z]!=i :
+                count = count + PixelSpacingY
+        per.append(count*SliceThickness)
+    return per
+
+'''
+for i in range(1,RawDictionary["NoOfObjects"]):
+    print(max(RawDictionary["Intensity"+str(i)])) '''
+
+print(Kurtosis(RawDictionary))
 end = timeit.default_timer()
 
 print("TIME = ",(end-start))

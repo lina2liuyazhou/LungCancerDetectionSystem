@@ -47,6 +47,9 @@ def importDCM(DataSet=12):
         ArrayDicom[:, :, fileListDicom.index(filenameDCM)] = ds.pixel_array
         # use print(ArrayDicom.shape) to get the dimentions of the 3d np array.  
     #import componentMask to np array.
+    
+    
+    
     path='../../DataSets/compmask/'+str(dataSet)+'/'
     fileListMasked=[]
    
@@ -61,7 +64,6 @@ def importDCM(DataSet=12):
         fileListMasked.append(path+str(i)+".dcm")            
                 
     ArrayDicomMasked = np.zeros(ConstPixelDims, dtype=RefDs.pixel_array.dtype)
-   
    # loop through all the DICOM files
     for filenameDCM in fileListMasked:
        # read the file
@@ -69,8 +71,20 @@ def importDCM(DataSet=12):
        # store the raw image data
        ArrayDicomMasked[:, :, fileListMasked.index(filenameDCM)] = ds.pixel_array
    # use print(ArrayDicom.shape) to get the dimentions of the 3d np array.
+   
+    for i in range(0,ConstPixelDims[0]):
+        for j in range(0,ConstPixelDims[1]):
+                for k in range(0,ConstPixelDims[2]):
+                    if(ArrayDicomMasked[i,j,k] != 0):
+                        ArrayDicomMasked[i,j,k] = 1
+    
+   
+   
     temp=ArrayDicom
+    #print(np.max(ArrayDicomMasked))
+    #print(np.max(ArrayDicom))
     ArrayDicom = np.multiply(ArrayDicomMasked , ArrayDicom)
+    #print(np.max(ArrayDicom))
     '''# USE this to test if it is ready for Labelling.
    pyplot.figure(dpi=300)
    pyplot.axes().set_aspect('equal', 'datalim')
@@ -100,7 +114,7 @@ def importDCM(DataSet=12):
    # using structure=generate_binary_structure(3,3) to consider diagonal elements as linked.
     blobs_labels , number_of_objects = label(ArrayDicom, structure=generate_binary_structure(3,3))
    #print(blobs)
-    print(number_of_objects) # no of objects
+    print("No Of Objects:",number_of_objects) # no of objects
    #print(blobs_labels.shape) To assert
    #Testing lables
     '''
@@ -120,7 +134,7 @@ def importDCM(DataSet=12):
     #RawDictionary = FeatureExtractionMainFunction(blobs_labels,number_of_objects,temp)
     #print(RawDictionary)
     details = [RefDs.SliceThickness , RefDs.PixelSpacing[0] ,RefDs.PixelSpacing[1]]
-    centroid = []
+    #centroid = []
     properties = measure.regionprops(blobs_labels, intensity_image=temp, cache=True)
    # for props in properties :
      #   centroid.append(props.mean_intensity)
