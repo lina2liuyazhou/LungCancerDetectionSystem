@@ -1,7 +1,7 @@
-    
-rootdir = '..\LIDC image set\Renamed\LIDC';
-workspacedir = '..\LIDC image set\Workspaces\';
-
+  
+rootdir = 'D:\Lung\DataSets\LIDC image set\Renamed\LIDC';
+workspacedir = 'D:\Lung\DataSets\LIDC image set\Workspaces\';
+set=12
 currentdir = strcat(rootdir,int2str(set),'\');
 % currentdir = '..\Data Set - Others\renamedData110\'; %Non LIDC sets
 
@@ -16,7 +16,6 @@ for i=1:slices
 end
 
 invert = not(bw); %Invert to get Lungs - black, remaining white
-
 comps = bwconncomp(invert);
 pixelarea = cellfun(@numel,comps.PixelIdxList);
 [largest,pos] = max(pixelarea);
@@ -43,6 +42,9 @@ for i=1:comps.NumObjects
 end
 
 comps2 = bwconncomp(componentsMask);
+props2 = regionprops(comps2);
+
+
 
 %imshow3D(componentsMask)
 %figure
@@ -55,12 +57,12 @@ comps2 = bwconncomp(componentsMask);
   %      fprintf(fileID,'%9d\n',comps2.PixelIdxList{i});
 %end
 
-mkdir(strcat('..\seg\',int2str(set)));
-for i=1:slices
-    dicomwrite(segmentedLung(:,:,i),strcat('..\seg\',int2str(set),'\',int2str(i),'.dcm'));
-end
+%mkdir(strcat('..\seg\',int2str(set)));
+%for i=1:slices
+ %   dicomwrite(segmentedLung(:,:,i),strcat('..\seg\',int2str(set),'\',int2str(i),'.dcm'));
+%end
 
-mkdir(strcat('..\compmask\',int2str(set)));
-for i=1:slices
-    dicomwrite(componentsMask(:,:,i),strcat('..\compmask\',int2str(set),'\',int2str(i),'.dcm'));
-end
+%mkdir(strcat('..\compmask\',int2str(set)));
+%for i=1:slices
+ %   dicomwrite(componentsMask(:,:,i),strcat('..\compmask\',int2str(set),'\',int2str(i),'.dcm'));
+%end 
