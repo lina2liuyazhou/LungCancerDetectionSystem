@@ -5,6 +5,9 @@ import numpy as np
 import timeit
 from scipy.ndimage import label, generate_binary_structure
 start = timeit.default_timer()
+if __name__ == "__saveNodules__":
+    #Do nothing
+    a = 5
 def saveNodules(DataSet=12):
     #Setting the path of imagesets.
     dataSet=DataSet
@@ -77,6 +80,7 @@ def saveNodules(DataSet=12):
     for fileIndex in range(1,number_of_objects+1):
         count = 0
         f=open("..\\..\\DataSets\\components\\"+str(dataSet) + str(fileIndex) + ".txt" , "w+")
+        log=open("..\\..\\DataSets\\components\\"+str(dataSet) + str(fileIndex) + "Log.txt" , "w+")
         f.write(str(ConstPixelDims[0])+" "+str(ConstPixelDims[1])+" "+str(ConstPixelDims[2])+"\n")
         f.write(str(ConstPixelSpacing[0])+" "+str(ConstPixelSpacing[1])+" "+str(ConstPixelSpacing[2])+"\n")
         for k in range(0,ConstPixelDims[2]):
@@ -94,6 +98,7 @@ def saveNodules(DataSet=12):
                 for i in range(0,ConstPixelDims[0]):
                     for j in range(0,ConstPixelDims[1]):
                         if blobs_labels[i][j][k] == fileIndex:
+                            log.write(str(i)+" "+str(j)+" "+str(k)+"\n")
                             f.write(str(temp[i][j][k]) + " ")
                         else:
                             f.write("0 ")
@@ -102,7 +107,7 @@ def saveNodules(DataSet=12):
     f.close()
                         
     return blobs_labels,number_of_objects
-saveNodules()
+#saveNodules()
 end = timeit.default_timer()
 
 print("TIME = ",(end-start))

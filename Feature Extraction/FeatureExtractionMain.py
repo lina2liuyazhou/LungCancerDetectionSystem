@@ -57,3 +57,6 @@ def FeatureExtractionMainFunction(blobs_labels,number_of_objects,ArrayDicom,deta
         RawDictionary["Coordinate1"][i][0] : X coordinate of 1st pixel of object i
     '''
     return RawDictionary
+if __name__ == "__saveNodules__":
+    #Do nothing
+    a = 5

@@ -83,6 +83,8 @@ def importDCM(DataSet=12):
     temp=ArrayDicom
     #print(np.max(ArrayDicomMasked))
     #print(np.max(ArrayDicom))
+    #ArrayDicomMaskedBinary = np.zeros(ConstPixelDims, dtype=RefDs.pixel_array.dtype)
+    #ArrayDicomMaskedBinary[:,:,:] = ArrayDicomMasked[:,:,:] > 0
     ArrayDicom = np.multiply(ArrayDicomMasked , ArrayDicom)
     #print(np.max(ArrayDicom))
     '''# USE this to test if it is ready for Labelling.
@@ -127,7 +129,7 @@ def importDCM(DataSet=12):
     pyplot.figure(dpi=300)
     pyplot.axes().set_aspect('equal', 'datalim')
     pyplot.set_cmap(pyplot.gray())
-    pyplot.pcolormesh(x, y, np.flipud(blobs_labels[:,:, 33]))
+    pyplot.pcolormesh(x, y, np.flipud(blobs_labels[:,:, 62]))
     pyplot.show()
    #print(ArrayDicom.shape[1]) 
     #print(len(peri))
@@ -140,3 +142,6 @@ def importDCM(DataSet=12):
      #   centroid.append(props.mean_intensity)
    # details1 = props.moments_hu
     return blobs_labels,number_of_objects,temp,details , properties
+
+blobs_labels,number_of_objects,temp,details , properties = importDCM(15)
+print(number_of_objects)    

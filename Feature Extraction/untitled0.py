@@ -36,10 +36,10 @@ def saveNodules(DataSet=12):
 d = {}
 s = {}
 for dataset in range(1,60):
-    print(dataset)
+    #print(dataset)
     end = timeit.default_timer()
 
-    print("TIME = ",(end-start))
+    #print("TIME = ",(end-start))
 
     dims , space = saveNodules(dataset)
     try:
@@ -50,6 +50,7 @@ for dataset in range(1,60):
         s[str(space)] = d[str(space)] + 1
     except:
         s[str(space)] = 1
+        print(str(space[0])+" "+str(space[1])+ " "+str(space[2]))
 print(d)
 print(s)
 end = timeit.default_timer()
